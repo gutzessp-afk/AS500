@@ -1,0 +1,25 @@
+# Solo PostgreSQL vive en Docker. Laravel corre normal en tu máquina.
+# Puerto 5433 para no chocar con otro Postgres que tengas en el 5432.
+services:
+  db:
+    image: postgres:17
+    container_name: sula-laravel-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      TZ: America/Mexico_City
+      PGTZ: America/Mexico_City
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - sula_laravel_datos:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  sula_laravel_datos:
